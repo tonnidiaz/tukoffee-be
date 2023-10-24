@@ -63,6 +63,5 @@ const UserSchema = new Schema({
 })
 
 export interface IUser extends Document, InferSchemaType<typeof UserSchema> {
-    
 }
 export { UserSchema}

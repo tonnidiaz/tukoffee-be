@@ -1,13 +1,14 @@
-const express = require('express');
-const { tunedErr } = require('../utils/functions');
-const { Product } = require('../models');
+import express from 'express';
+import { tunedErr } from '../utils/functions';
+import { Product } from '../models';
+import { IProduct } from '../models/product';
 const router = express.Router();
 
 router.get('/',async (req, res)=>{
     try {
         const {q, by} = req.query;
         console.log(q)
-        let products = []
+        let products : IProduct[] = []
 
         if (by == "pid"){
             products = await Product.find({pid: q}).exec()
@@ -23,4 +24,4 @@ router.get('/',async (req, res)=>{
         return tunedErr(res, 500, "Something went wrong")
     }
 })
-module.exports = router
+export default router

@@ -1,27 +1,28 @@
-var express = require("express");
-const { Cart, User } = require("../models");
-const { Schema, Mongoose, default: mongoose } = require("mongoose");
-const { auth, lightAuth } = require("../utils/middleware");
-const bcrypt = require("bcrypt");
-const { parser, DEV } = require("../utils/constants");
-const { randomInRange, tunedErr, sendMail } = require("../utils/functions");
-const router = express.Router();
+
+import { Cart, User } from "../models";
+import { auth, lightAuth } from "../utils/middleware";
+import bcrypt from "bcrypt";
+import { parser, DEV } from "../utils/constants";
+import { randomInRange, tunedErr, sendMail } from "../utils/functions";
+import { IUser } from "../models/user";
+import { Router } from "express";
+import { Obj } from "../utils/types";
+import { ICart } from "../models/cart";
+const router = Router();
 
 /* GET users listing. */
 router.get("/", async (req, res, next) => {
     const { email, id } = req.query;
 
-    let user;
+    let user : IUser | null;
     user = email
         ? await User.findOne({ email }).exec()
         : await User.findById(id).exec();
 
-    res.json({ user: user.toJSON() });
+    res.json({ user: user!.toJSON() });
 });
 
-router
-    .route("/cart")
-    .get( async (req, res) => {
+router.get("/cart", async (req, res) => {
         try {
             const { user } = req.query;
             //const _user = await User.findById(user).exec();
@@ -30,7 +31,7 @@ router
             let c = await cart.populate("products.product");
             c = {
                 ...c.toJSON(),
-                products: c.products.filter((it) => it.product != null && it.product.quantity > 0),
+                products: c.products.filter((it) => it.product != null && (it.product as Obj).quantity > 0),
             };
             res.json({ cart: c });
         } catch (e) {
@@ -38,13 +39,13 @@ router
             res.status(500).send("tuned:Something went wrong");
         }
     })
-    .post(auth, async (req, res) => {
+    router.post("/cart", auth, async (req, res) => {
         try {
             const { action } = req.query;
             const { product, quantity } = req.body;
             console.log(product, action, quantity);
-            const _user = req.user;
-            let cart = null;
+            const _user = req.user!;
+            let cart : ICart | null = null;
             if (_user.cart) {
                 cart = (await Cart.findById(_user.cart).exec()) ?? new Cart();
             } else {
@@ -52,23 +53,24 @@ router
             }
 
             if (action == "add") {
-                cart.customer = _user;
+                cart.customer = _user._id;
                 const prod = cart.products.find((it) => it.product == product);
 
                 if (!prod) {
                     console.log("Adding");
                     //add product to cart if the cart does not have the product
-                    cart.products.push({ product });
+                    console.log(product)
+                    //cart.products.push({ product: product });
                 } else if (prod && quantity) {
                     // Increase the product's quantiry
                     prod.quantity = quantity;
                 }
                 await cart.save();
-                _user.cart = cart;
+                _user.cart = cart._id;
                 await _user.save();
 
                 //let c = await cart.populate("products.product")
-                let c = await cart.populate("products.product");
+                let c : Obj = await cart.populate("products.product");
                 c = {
                     ...c.toJSON(),
                     products: c.products.filter((it) => it.product != null && it.product.quantity > 0),
@@ -81,7 +83,7 @@ router
                         (it) => it.product != product
                     );
                     await cart.save();
-                    let c = await cart.populate("products.product");
+                    let c : Obj = await cart.populate("products.product");
 
                     c = {
                         ...c.toJSON(),
@@ -94,7 +96,7 @@ router
             else if (action == 'clear'){
                 cart.products = []
                 await cart.save()
-                let c = await cart.populate("products.product");
+                let c : Obj= await cart.populate("products.product");
 
                     c = {
                         ...c.toJSON(),
@@ -109,11 +111,11 @@ router
         }
     }); 
 
-router.post("/delivery-address", parser, auth, async (req, res) => {
+router.post("/delivery-address", auth, async (req, res) => {
     try {
         const { action } = req.query;
         const { address } = req.body;
-        let u = req.user;
+        let u = req.user!
         if (action == "add") {
             if (!address) return res.status(400).send("tuned:Provide address");
             u.delivery_addresses.push(address);
@@ -134,34 +136,34 @@ router.post("/edit", auth, async (req, res) => {
         const { field } = req.query;
         const { value, userId, data } = req.body;
         console.log(userId)
-        const _user = userId ? await User.findById(userId).exec() : req.user;
+        const _user = userId ? await User.findById(userId).exec() : req.user!;
         if (!field) {
             for (let key of Object.keys(value)) {
-                _user[key] = value[key];
+                _user![key] = value[key];
             }
         } else {
             if (field == 'email'){
 
                 // Check password
-                if ( !bcrypt.compareSync(data.password, _user.password))
+                if ( !bcrypt.compareSync(data.password, _user!.password))
                     return tunedErr(res, 401, 'Incorrect password')
-                _user.new_email = data.email;
+                _user!.new_email = data.email;
 
                 const otp =  randomInRange(1000,9999)
-                _user.otp = otp
+                _user!.otp = otp
                 if (DEV) console.log(otp);
                await sendMail("Tukoffee Verification Email",
                 `<h2 style="font-weight: 500">Here is your Email verification One-Time-PIN:</h2>
-                    <p style="font-size: 20px; font-weight: 600">${_user.otp}</p>
-                ` , _user.new_email
+                    <p style="font-size: 20px; font-weight: 600">${_user!.otp}</p>
+                ` , _user!.new_email!
                )
             }else{
-                 _user[field] = value;
+                 _user![(field as string)] = value;
             }
            
         }
-        await _user.save();
-        res.json({ user: _user.toJSON() });
+        await _user!.save();
+        res.json({ user: _user!.toJSON() });
     } catch (error) {
         console.log(error);
         res.status(500).send("tuned:Something went wrong");
@@ -171,17 +173,16 @@ router.post("/edit", auth, async (req, res) => {
 router.post("/delete", auth, async (req, res) => {
     try {
         const { password } = req.body;
-        const passValid = bcrypt.compareSync(password, req.user.password);
+        const passValid = bcrypt.compareSync(password, req.user!.password);
         if (!passValid) {
             return res.status(401).send("tuned:Incorrect password!");
         }
         // delete the user
-        console.log(req.user.email);
-        await User.findByIdAndDelete(req.user._id).exec();
+        await User.findByIdAndDelete(req.user!._id).exec();
         res.send("tuned:Account deleted successfully!");
     } catch (e) {
         console.log(e);
         res.status(500).send("tuned:Something went wrong");
     }
 });
-module.exports = router;
+export default router;

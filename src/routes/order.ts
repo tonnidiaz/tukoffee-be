@@ -140,10 +140,10 @@ router.post('/edit', auth, async (req, res)=>{
         }  
         order.last_modified = new Date()
         await order.save()
-        res.json({id: order.oid})
+        res.json({id: order.oid, order: await  (await order.populate("customer")).populate('store')}) 
     }
     catch(e){
-        res.status(500).send("tuned:Something went wrong!")
+       tunedErr(res, 500, "Something went wrong!",e)
     }
 })
 export default router;

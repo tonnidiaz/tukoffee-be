@@ -1,10 +1,10 @@
 import multer from "multer"
 
 enum OrderStatus  {
-    pending,
-    awaitingPickup,
-    completed,
-    cancelled,
+    pending = 'pending',
+    awaitingPickup = 'awaitingPickup',
+    completed = 'completed',
+    cancelled = 'cancelled',
 }
 enum OrderMode   {
     delivery,

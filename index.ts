@@ -1,8 +1,8 @@
 
-import app from './app';
+import app from './src/app';
 var debug = require('debug')('backend:server');
 var http = require('http');
-import io from './utils/io';
+import io from './src/utils/io';
 
 /**
  * Get port from environment and store in Express.

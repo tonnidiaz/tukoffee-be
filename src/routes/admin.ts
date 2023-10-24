@@ -1,6 +1,6 @@
-const express = require('express');
-const { Product, User, Order, Store, Review } = require('../models');
-const { parseProducts } = require('../utils/functions');
+import express from 'express';
+import { Product, User, Order, Store, Review } from '../models';
+import { parseProducts } from '../utils/functions';
 const router = express.Router();
 
 /* GET home page. */
@@ -20,4 +20,4 @@ router.get('/dash', async function(req, res, next) {
   res.json(data)
 });
 
-module.exports = router;
+export default router

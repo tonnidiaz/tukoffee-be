@@ -1,6 +1,7 @@
-const io = require("../utils/io")
+import { Router } from "express"
+import io from "../utils/io"
 
-const router = require("express").Router()
+const router = Router()
 
 const yocoResp = {
     createdDate: '2023-10-15T17:12:20.936383Z',
@@ -31,5 +32,5 @@ router.post('/yoco', async (req, res)=>{
     res.send("OK")
 })
 
-module.exports = router
+export default router
 

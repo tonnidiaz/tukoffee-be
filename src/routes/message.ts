@@ -1,6 +1,7 @@
-const { sendMail, tunedErr, getStoreDetails } = require('../utils/functions')
+import { Router } from 'express'
+import { sendMail, tunedErr, getStoreDetails } from '../utils/functions'
 
-const router = require('express').Router()
+const router = Router()
 
 router.post('/send', async(req, res)=>{
     const {body} = req
@@ -15,4 +16,4 @@ if (!r) return tunedErr(res, 500, 'Failed to send email')
 res.send('ok')
 }) 
 
-module.exports = router
+export default router

@@ -1,9 +1,9 @@
-const express = require("express");
-const { Product, Order, Review } = require("../models");
-const { parseProducts, tunedErr } = require("../utils/functions");
-const { auth, lightAuth } = require("../utils/middleware");
-const { OrderStatus } = require("../utils/constants");
-const { ReviewStatus } = require("../models/review");
+import express, { response } from "express";
+import { Product, Order, Review } from "../models";
+import { parseProducts, tunedErr } from "../utils/functions";
+import { auth, lightAuth } from "../utils/middleware";
+import { OrderStatus } from "../utils/constants";
+import { EReviewStatus, IReview } from "../models/review";
 const router = express.Router();
 
 const genPID = async () => {
@@ -36,7 +36,7 @@ router.get("/", lightAuth, async (req, res, next) => {
                 break;
             case "received":
                 let orders = await Order.find({
-                    customer: req.user._id,
+                    customer: req.user!._id,
                     status:OrderStatus.completed,
                 }).exec();
                 orders = await Promise.all(
@@ -86,9 +86,9 @@ router.post("/add", auth, async (req, res) => {
 router.get("/reviews", lightAuth, async (req, res) => {
     try {
         const { id, pid, user, ids } = req.query;
-        let reviews = [];
+        let reviews : IReview[]= [];
         if (pid) reviews = await Review.find({ product: pid }).exec();
-        else if (id) reviews = [await Review.findById(id).exec()];
+        else if (id) reviews = [(await Review.findById(id).exec())!];
         else if (user) reviews = await Review.find({ user }).exec();
         else {
             reviews = await Review.find().exec();
@@ -119,18 +119,20 @@ router.post("/review", auth, async (req, res) => {
             for (let key of Object.keys(review)) {
                 _review.set(key, review[key]);
             }
-            _review.product = prod;
-            _review.user = req.user._id;
+            _review.product = prod._id;
+        
+            _review.user = req.user!._id;
             await _review.save();
-            prod.reviews.push(_review);
+            prod.reviews.push(_review._id);
             await prod.save();
            return res.json({ reviews: prod.reviews.map(e=> e.toJSON()) });
         } else if (act == "edit") {
             const rev = await Review.findById(id).exec();
+            if (!rev) return res.status(400).send("Bad request")
             for (let key of Object.keys(review)) {
                 rev.set(key, review[key]);
             }
-        rev.status = ReviewStatus.pending
+        rev.status = EReviewStatus.pending
             rev.last_modified = new Date();
             await rev.save();
            
@@ -140,9 +142,9 @@ router.post("/review", auth, async (req, res) => {
                 for (let id of ids){
                     const rev = await Review.findById(id).exec()
                     await Review.findByIdAndDelete(id).exec()
-                    const prod = await Product.findById(rev.product).exec()  
-                    prod.reviews = prod.reviews.filter(it => it != id)
-                        await prod.save()
+                    const prod = await Product.findById(rev!.product).exec()  
+                    prod!.reviews = prod!.reviews.filter(it => it != id)
+                        await prod!.save()
                 }
             }
             else
@@ -208,4 +210,4 @@ router.post("/delete", auth, async (req, res) => {
 });
 
 
-module.exports = router;
+export default router;

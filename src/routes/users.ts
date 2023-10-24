@@ -1,14 +1,16 @@
-const express = require('express');
+import express from 'express';
 const router = express.Router();
-const { User, Cart, Order, Review } =  require("../models/index")
+import { User, Cart, Order, Review } from "../models/index";
+import { Obj } from '../utils/types';
 /* GET users listing. */
 router.get('/', async function(req, res, next) {
 
     const { id } = req.query
 
-    let users = []
+    let users : Obj[]= []
     try{
     if (id){
+
         const user = await User.findById(id).exec()
         if (!user) return res.status(404).json({msg: "User not found"})
         console.log(user.address)
@@ -51,4 +53,4 @@ router.post('/delete', async (req, res)=>{
     }
 })
 
-module.exports = router;
+export default router;

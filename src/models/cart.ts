@@ -1,4 +1,4 @@
-import { Schema } from "mongoose"
+import { Document, InferSchemaType, Schema } from "mongoose"
 
 const CartSchema = new Schema({
     customer: {
@@ -12,5 +12,7 @@ const CartSchema = new Schema({
         }], default: []
     }
 })
+
+export interface ICart extends Document, InferSchemaType<typeof CartSchema>{}
 
 export {CartSchema}

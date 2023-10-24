@@ -1,4 +1,4 @@
-import { Schema } from "mongoose";
+import { Document, InferSchemaType, Schema } from "mongoose";
 
 
 const ProductSchema = new Schema({
@@ -77,4 +77,5 @@ const ProductSchema = new Schema({
     
 })
 
+export interface IProduct extends Document, InferSchemaType<typeof ProductSchema>{}
 export { ProductSchema }

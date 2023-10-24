@@ -93,7 +93,10 @@ const sendSMS = async (number, message)=>{
     return await axios.request(options)
 }
 
-const tunedErr = (res: Response, status: number, msg: string) => {
+const tunedErr = (res: Response, status: number, msg: string, e?: any) => {
+    if (e){
+        console.log(e)
+    }
     return res.status(status).send(`tuned:${msg}`)
 }
 

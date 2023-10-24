@@ -1,5 +1,6 @@
-const express = require('express');
-const { Cart, Order, User } = require('../models');
+import express from 'express';
+import { Cart, Order, User } from '../models';
+import { Obj } from '../utils/types';
 const router = express.Router();
 
 
@@ -7,7 +8,7 @@ router.get("/", async (req, res)=>{
     try{
 
         const { oid, user } = req.query
-        let orders = [];
+        let orders = <any>[];
         if (oid){
             const order = await Order.findOne({oid}).exec()
             if (!order) return res.status(404).json({msg: "Order not found"})
@@ -19,7 +20,7 @@ router.get("/", async (req, res)=>{
         else{
             orders = await Order.find().exec()
         }
-        let populatedOrders = []
+        let populatedOrders = <Obj>[]
         for (let o of orders){
             if (oid){
                  let ord = await  (await o.populate("customer")).populate('store')
@@ -37,4 +38,4 @@ router.get("/", async (req, res)=>{
         res.status(500).json({msg: "Something went wrong!"})
     }
 })
-module.exports = router
+export default router

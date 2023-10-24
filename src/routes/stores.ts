@@ -1,6 +1,6 @@
-const { Store } = require('../models');
-const { tunedErr } = require('../utils/functions')
-const { auth} = require('../utils/middleware')
+import { Store } from '../models';
+import { tunedErr } from '../utils/functions';
+import { auth } from '../utils/middleware';
 const router = require('express').Router()
 
 router.get('/', async (req, res)=>{
@@ -40,4 +40,4 @@ router.post('/del',  auth, async (req, res)=>{
         tunedErr(res, 500, "Something went wrong")
     }
 })
-module.exports = router
+export default router
