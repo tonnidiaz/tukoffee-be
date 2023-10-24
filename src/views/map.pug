@@ -1,0 +1,10 @@
+extends layout 
+block content 
+    #map(style='width: 100%; height: 100%;')
+    <script src='https://api.mapbox.com/mapbox-gl-js/v2.14.1/mapbox-gl.js'></script>
+    script#search-js(defer='' src='https://api.mapbox.com/search-js/v1.0.0-beta.17/web.js')
+    <link href='https://api.mapbox.com/mapbox-gl-js/v2.14.1/mapbox-gl.css' rel='stylesheet' />
+
+    script(src='/js/map.js')
+
+        
