@@ -8,7 +8,7 @@
     "watch": "tsc -w",
     "start": "fastify start -w -l info -P -a 0.0.0.0 ./dist/app.js",
     "dev": "npm run build && concurrently -k -p \"[{name}]\" -n \"TypeScript,App\" -c \"yellow.bold,cyan.bold\" \"npm:watch\" \"npm:dev:start\"",
-    "dev:start": "fastify start --ignore-watch=.ts$ -w -l info -P dist/app.js"
+    "dev:start": "fastify start --ignore-watch=.ts$ -w -l info -P dist/app.js --host"
   },
   "keywords": [],
   "author": "",
@@ -16,9 +16,12 @@
   "dependencies": {
     "@fastify/autoload": "^5.8.0",
     "@fastify/sensible": "^5.5.0",
+    "@fastify/view": "^8.2.0",
     "fastify": "^4.24.3",
     "fastify-cli": "^5.8.0",
-    "fastify-plugin": "^4.5.1"
+    "fastify-plugin": "^4.5.1",
+    "pug": "^3.0.2",
+    "socket.io": "^4.7.2"
   },
   "devDependencies": {
     "@types/node": "^20.8.9",
