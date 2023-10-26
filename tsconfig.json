@@ -3,9 +3,7 @@
     "compilerOptions": {
       "outDir": "dist",
       "sourceMap": true,
-      //"rootDir": "./",
-      "target": "ES2022"
     }, 
-    "include": ["src/**/*.ts", "./*.ts"]
+    "include": ["src/**/*.ts", ]
   }
     
