@@ -4,7 +4,7 @@
   "description": "",
   "scripts": {
     "clean": "rimraf dist/",
-    "build": "yarn clean && npx tsc -p tsconfig.json  && yarn cp",
+    "build": "npm run clean && npx tsc -p tsconfig.json  && npm run cp",
     "start": "node dist/index.js",
     "dev": "tsx watch  index.ts",
     "cp": "copyfiles -u 1 src/views/* src/public/**/* dist/src"
