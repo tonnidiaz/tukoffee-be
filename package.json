@@ -3,8 +3,11 @@
   "version": "1.0.0",
   "description": "",
   "scripts": {
-    "start": "ts-node index.ts",
-    "dev": "tsx watch  index.ts"
+    "clean": "rimraf dist/",
+    "build": "yarn clean && npx tsc -p tsconfig.json  && yarn cp",
+    "start": "node dist/index.js",
+    "dev": "tsx watch  index.ts",
+    "cp": "copyfiles -u 1 src/views/* src/public/**/* dist/src"
   },
   "keywords": [],
   "author": "",
@@ -18,9 +21,11 @@
   },
   "devDependencies": {
     "@types/node": "^20.8.9",
+    "copyfiles": "^2.4.1",
     "fastify-tsconfig": "^2.0.0",
     "pino": "^8.16.1",
     "pino-pretty": "^10.2.3",
+    "rimraf": "^5.0.5",
     "ts-node": "^10.9.1",
     "tsconfig-paths": "^4.2.0",
     "tsx": "^3.14.0",
