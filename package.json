@@ -2,10 +2,9 @@
   "name": "bend-fastify-2",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
   "scripts": {
     "build": "npx tsc -p tsconfig.json",
-    "start": "ts-node dist/index.js",
+    "start": "ts-node index.js",
     "dev": "tsx watch  index.ts"
   },
   "keywords": [],
